@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { FormEl, Label, Title, Input, Button } from './ContactForm.Styled';
+import { useDispatch, useSelector } from 'react-redux';
+import { addContact } from 'redux/contactSlice';
+import { nanoid } from '@reduxjs/toolkit';
 
-export const ContactForm = ({ onAddContact }) => {
+export const ContactForm = () => {
+  const dispatch = useDispatch();
+  const contacts = useSelector(state => state.contactsData.contacts);
   const [name, setName] = useState('');
   const [tel, setTel] = useState('');
 
@@ -29,10 +34,16 @@ export const ContactForm = ({ onAddContact }) => {
 
     const contact = {
       name,
+      id: nanoid(),
       tel,
     };
 
-    onAddContact(contact);
+    if (contacts.some(el => el.name === contact.name)) {
+      alert(`${contact.name} is already in contacts!`);
+      return;
+    }
+    dispatch(addContact(contact));
+
     reset();
   };
 
